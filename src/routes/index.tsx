@@ -17,7 +17,16 @@ import {
   Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { languages, ui, diseaseNames, diseaseInfoByLang, type Lang } from "@/i18n";
+import {
+  languages,
+  ui,
+  diseaseNames,
+  diseaseInfoByLang,
+  fruitDiseaseNames,
+  fruitDiseaseInfoByLang,
+  type Lang,
+  type Mode,
+} from "@/i18n";
 
 type Prediction = {
   predicted_class: string;
@@ -38,16 +47,16 @@ const maxFileBytes = 10 * 1024 * 1024;
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Mango Leaf Disease Detector — Field diagnosis" },
+      { title: "Mango Disease Detector — Field diagnosis" },
       {
         name: "description",
         content:
-          "Upload a mango leaf photo for an AI-assisted disease estimate and practical next steps.",
+          "Upload a mango leaf or fruit photo for an AI-assisted disease estimate and practical next steps.",
       },
-      { property: "og:title", content: "Mango Leaf Disease Detector" },
+      { property: "og:title", content: "Mango Disease Detector" },
       {
         property: "og:description",
-        content: "A clear field reading for your mango leaf, with practical recommendations.",
+        content: "A clear field reading for your mango leaf or fruit, with practical recommendations.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -67,6 +76,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const [lang, setLang] = useState<Lang>("en");
+  const [mode, setMode] = useState<Mode>("leaf");
   const t = ui[lang];
 
   useEffect(() => {
@@ -104,7 +114,7 @@ function Index() {
   }, [selectedFile]);
 
   const analysis = useMutation({
-    mutationFn: async (file: File): Promise<AnalysisResult> => {
+    mutationFn: async ({ file, mode }: { file: File; mode: Mode }): Promise<AnalysisResult> => {
       const baseUrl = (import.meta.env["VITE_API_BASE_URL"] || "http://localhost:8000").replace(
         /\/+$/,
         "",
@@ -115,39 +125,67 @@ function Index() {
         return fetch(`${baseUrl}${path}`, { method: "POST", body });
       };
 
-      const [predictRes, detectRes] = await Promise.allSettled([post("/predict"), post("/detect")]);
+      if (mode === "leaf") {
+        const [predictRes, detectRes] = await Promise.allSettled([post("/predict"), post("/detect")]);
 
-      if (predictRes.status === "rejected") {
+        if (predictRes.status === "rejected") {
+          throw new Error(t.connectError);
+        }
+        if (!predictRes.value.ok) {
+          throw new Error(t.serverError(predictRes.value.status));
+        }
+        let result: unknown;
+        try {
+          result = await predictRes.value.json();
+        } catch {
+          throw new Error(t.unreadable);
+        }
+        if (
+          typeof result !== "object" ||
+          result === null ||
+          typeof (result as Record<string, unknown>)["predicted_class"] !== "string" ||
+          typeof (result as Record<string, unknown>)["confidence"] !== "number"
+        ) {
+          throw new Error(t.unexpected);
+        }
+
+        let detections: Detection[] = [];
+        if (detectRes.status === "fulfilled" && detectRes.value.ok) {
+          try {
+            const d = await detectRes.value.json();
+            if (Array.isArray(d?.detections)) detections = d.detections;
+          } catch {
+            /* boxes are optional */
+          }
+        }
+        return { prediction: result as Prediction, detections };
+      }
+
+      // fruit: single endpoint, derive a "Prediction"-shaped object from top detection
+      let res: Response;
+      try {
+        res = await post("/detect-fruit");
+      } catch {
         throw new Error(t.connectError);
       }
-      if (!predictRes.value.ok) {
-        throw new Error(t.serverError(predictRes.value.status));
-      }
-      let result: unknown;
+      if (!res.ok) throw new Error(t.serverError(res.status));
+
+      let data: unknown;
       try {
-        result = await predictRes.value.json();
+        data = await res.json();
       } catch {
         throw new Error(t.unreadable);
       }
-      if (
-        typeof result !== "object" ||
-        result === null ||
-        typeof (result as Record<string, unknown>)["predicted_class"] !== "string" ||
-        typeof (result as Record<string, unknown>)["confidence"] !== "number"
-      ) {
-        throw new Error(t.unexpected);
-      }
 
-      let detections: Detection[] = [];
-      if (detectRes.status === "fulfilled" && detectRes.value.ok) {
-        try {
-          const d = await detectRes.value.json();
-          if (Array.isArray(d?.detections)) detections = d.detections;
-        } catch {
-          /* boxes are optional */
-        }
-      }
-      return { prediction: result as Prediction, detections };
+      const detections: Detection[] = Array.isArray((data as Record<string, unknown>)?.["detections"])
+        ? ((data as Record<string, unknown>)["detections"] as Detection[])
+        : [];
+      const top = detections[0];
+      const prediction: Prediction = top
+        ? { predicted_class: top.label, confidence: top.confidence }
+        : { predicted_class: "Healthy", confidence: 1 };
+
+      return { prediction, detections };
     },
   });
 
@@ -194,16 +232,20 @@ function Index() {
     return k === "die black" ? "die back" : k;
   };
 
+  // mode-aware lookup tables
+  const diseaseNamesMap = mode === "leaf" ? diseaseNames : fruitDiseaseNames;
+  const diseaseInfoMap = mode === "leaf" ? diseaseInfoByLang : fruitDiseaseInfoByLang;
+
   const prediction = analysis.data?.prediction;
   const detections = analysis.data?.detections ?? [];
   const className = prediction?.predicted_class.trim() ?? "";
   const diseaseKey = normalizeKey(className);
-  const disease = diseaseInfoByLang[lang][diseaseKey];
+  const disease = diseaseInfoMap[lang][diseaseKey];
   const isHealthy = diseaseKey === "healthy";
   const toPercent = (c: number) => Math.round(Math.min(100, Math.max(0, c <= 1 ? c * 100 : c)));
   const percent = prediction ? toPercent(prediction.confidence) : 0;
-  const nameOf = (label: string) => diseaseNames[lang][normalizeKey(label)] ?? label;
-  const displayName = diseaseNames[lang][diseaseKey] ?? className;
+  const nameOf = (label: string) => diseaseNamesMap[lang][normalizeKey(label)] ?? label;
+  const displayName = diseaseNamesMap[lang][diseaseKey] ?? className;
   const topDetection = isHealthy
     ? undefined
     : detections.find((d) => normalizeKey(d.label) === diseaseKey);
@@ -217,6 +259,23 @@ function Index() {
     setFileError(null);
   };
 
+  const switchMode = (m: Mode) => {
+    if (m === mode) return;
+    setMode(m);
+    reset();
+  };
+
+  // mode-aware strings
+  const heroTitle = mode === "leaf" ? t.heroTitle : t.heroTitleFruit;
+  const heroSub = mode === "leaf" ? t.heroSub : t.heroSubFruit;
+  const intakeStepLabel = mode === "leaf" ? t.leafIntakeStep : t.fruitIntakeStep;
+  const dropTitle = mode === "leaf" ? t.dropTitle : t.dropTitleFruit;
+  const analyzeLabel = mode === "leaf" ? t.analyze : t.analyzeFruit;
+  const analyzingLabel = mode === "leaf" ? t.analyzing : t.analyzingFruit;
+  const readingFeaturesLabel = mode === "leaf" ? t.readingFeatures : t.readingFeaturesFruit;
+  const footerLabel = mode === "leaf" ? t.footer : t.footerFruit;
+  const appTitleLabel = mode === "leaf" ? t.appTitle : t.appTitleFruit;
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-foreground/10">
@@ -224,11 +283,11 @@ function Index() {
           <div className="flex items-center gap-3">
             <img
               src="/mango-svgrepo-com.svg"
-              alt="Mango Leaf Disease Detector logo"
+              alt="Mango Disease Detector logo"
               className="size-8 rounded-lg object-contain"
             />
             <div className="leading-none">
-              <p className="font-display text-[17px] font-medium">{t.appTitle}</p>
+              <p className="font-display text-[17px] font-medium">{appTitleLabel}</p>
               <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/50">
                 {t.fieldDiagnostic}
               </p>
@@ -239,24 +298,45 @@ function Index() {
             <span>{t.step2}</span>
             <span>{t.step3}</span>
           </div>
-          <div
-            role="group"
-            aria-label={t.language}
-            className="flex overflow-hidden rounded-lg ring-1 ring-foreground/15"
-          >
-            {languages.map((l) => (
-              <button
-                key={l.code}
-                type="button"
-                onClick={() => setLang(l.code)}
-                aria-pressed={lang === l.code}
-                className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-                  lang === l.code ? "bg-primary text-primary-foreground" : "hover:bg-foreground/5"
-                }`}
-              >
-                {l.label}
-              </button>
-            ))}
+          <div className="flex items-center gap-3">
+            <div
+              role="group"
+              aria-label="Mode"
+              className="flex overflow-hidden rounded-lg ring-1 ring-foreground/15"
+            >
+              {(["leaf", "fruit"] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => switchMode(m)}
+                  aria-pressed={mode === m}
+                  className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                    mode === m ? "bg-primary text-primary-foreground" : "hover:bg-foreground/5"
+                  }`}
+                >
+                  {m === "leaf" ? t.modeLeaf : t.modeFruit}
+                </button>
+              ))}
+            </div>
+            <div
+              role="group"
+              aria-label={t.language}
+              className="flex overflow-hidden rounded-lg ring-1 ring-foreground/15"
+            >
+              {languages.map((l) => (
+                <button
+                  key={l.code}
+                  type="button"
+                  onClick={() => setLang(l.code)}
+                  aria-pressed={lang === l.code}
+                  className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                    lang === l.code ? "bg-primary text-primary-foreground" : "hover:bg-foreground/5"
+                  }`}
+                >
+                  {l.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </header>
@@ -264,13 +344,13 @@ function Index() {
       <main className="mx-auto max-w-5xl px-6 py-10 sm:py-14">
         <div className="max-w-[40ch]">
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-citrus">
-            {t.leafIntakeStep}
+            {intakeStepLabel}
           </p>
           <h1 className="mt-3 font-display text-3xl font-medium leading-tight text-balance sm:text-[2.6rem]">
-            {t.heroTitle}
+            {heroTitle}
           </h1>
           <p className="mt-4 max-w-[52ch] text-base text-foreground/70 text-pretty sm:text-lg">
-            {t.heroSub}
+            {heroSub}
           </p>
         </div>
 
@@ -288,7 +368,7 @@ function Index() {
             <div
               role="button"
               tabIndex={0}
-              aria-label={t.dropTitle}
+              aria-label={dropTitle}
               onClick={() => inputRef.current?.click()}
               onKeyDown={onDropKeyDown}
               onDragOver={(event) => {
@@ -303,7 +383,7 @@ function Index() {
                 <div className="w-full">
                   <img
                     src={previewUrl}
-                    alt="Selected mango leaf preview"
+                    alt={mode === "leaf" ? "Selected mango leaf preview" : "Selected mango fruit preview"}
                     className="mx-auto max-h-48 w-full rounded-md object-contain"
                   />
                   <p className="mt-3 truncate text-sm font-medium text-foreground/80">
@@ -316,7 +396,7 @@ function Index() {
                   <span className="grid size-11 place-items-center rounded-full bg-primary/10 text-primary">
                     <Upload aria-hidden="true" className="size-5" />
                   </span>
-                  <p className="mt-3 text-sm font-medium text-foreground/85">{t.dropTitle}</p>
+                  <p className="mt-3 text-sm font-medium text-foreground/85">{dropTitle}</p>
                   <p className="mt-1 text-xs text-foreground/50">{t.dropSub}</p>
                 </div>
               )}
@@ -329,7 +409,7 @@ function Index() {
               onChange={onFileChange}
               className="sr-only"
               tabIndex={-1}
-              aria-label="Choose mango leaf photo"
+              aria-label={mode === "leaf" ? "Choose mango leaf photo" : "Choose mango fruit photo"}
             />
 
             {fileError && (
@@ -348,7 +428,7 @@ function Index() {
             <div className="mt-auto pt-6">
               <Button
                 type="button"
-                onClick={() => selectedFile && analysis.mutate(selectedFile)}
+                onClick={() => selectedFile && analysis.mutate({ file: selectedFile, mode })}
                 disabled={!selectedFile || analysis.isPending}
                 className="w-full rounded-lg bg-primary py-2.5 text-sm font-medium text-primary-foreground ring-1 ring-primary/30 transition-colors hover:bg-orange-700"
               >
@@ -357,10 +437,10 @@ function Index() {
                 ) : (
                   <ArrowRight aria-hidden="true" />
                 )}
-                {analysis.isPending ? t.analyzing : t.analyze}
+                {analysis.isPending ? analyzingLabel : analyzeLabel}
               </Button>
               <p className="mt-3 text-center text-[11px] text-foreground/45">
-                {analysis.isPending ? t.readingFeatures : t.fileHintBottom}
+                {analysis.isPending ? readingFeaturesLabel : t.fileHintBottom}
               </p>
             </div>
           </section>
@@ -375,14 +455,18 @@ function Index() {
                   {t.diagnosisLabel}
                 </span>
                 {isHealthy ? (
-                  <CircleCheck aria-label="Healthy leaf" className="size-4" />
+                  <CircleCheck aria-label="Healthy" className="size-4" />
                 ) : (
                   <span className="font-mono text-[10px] opacity-55">{t.readingComplete}</span>
                 )}
               </div>
 
               <div className="relative mt-5 overflow-hidden rounded-lg bg-foreground/10">
-                <img src={previewUrl} alt="Analyzed mango leaf" className="block h-auto w-full" />
+                <img
+                  src={previewUrl}
+                  alt={mode === "leaf" ? "Analyzed mango leaf" : "Analyzed mango fruit"}
+                  className="block h-auto w-full"
+                />
                 {topDetection && (
                   <div
                     className="absolute border-2 border-citrus"
@@ -435,7 +519,7 @@ function Index() {
               <p className="mt-5 text-sm leading-relaxed opacity-85 text-pretty">
                 {disease?.description ?? t.noDescription}
               </p>
-              {otherPredictions.length > 0 && (
+              {mode === "leaf" && otherPredictions.length > 0 && (
                 <div className="mt-5">
                   <p className="font-mono text-[10px] uppercase tracking-[0.18em] opacity-60">
                     {t.otherPossibilities}
@@ -528,7 +612,7 @@ function Index() {
         </div>
 
         <p className="mt-10 text-center font-mono text-[10px] uppercase tracking-[0.16em] text-foreground/40">
-          {t.footer}
+          {footerLabel}
         </p>
       </main>
     </div>

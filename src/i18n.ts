@@ -1,5 +1,6 @@
 export type Lang = "en" | "hi" | "mr";
 export type DiseaseInfo = { description: string; remedies: string[] };
+export type Mode = "leaf" | "fruit";
 
 export const languages: { code: Lang; label: string }[] = [
   { code: "en", label: "English" },
@@ -10,21 +11,31 @@ export const languages: { code: Lang; label: string }[] = [
 const en = {
   language: "Language",
   appTitle: "Mango Leaf Disease Detector",
+  appTitleFruit: "Mango Fruit Disease Detector",
   fieldDiagnostic: "Field diagnostic",
+  modeLeaf: "Leaf",
+  modeFruit: "Fruit",
   step1: "01 Intake",
   step2: "02 Diagnosis",
   step3: "03 Remedies",
   leafIntakeStep: "Leaf intake · Step 01",
+  fruitIntakeStep: "Fruit intake · Step 01",
   heroTitle: "Read a mango leaf like a field note.",
+  heroTitleFruit: "Read a mango fruit like a field note.",
   heroSub: "Choose a clear photo of a single leaf for an AI-assisted reading and practical next steps.",
+  heroSubFruit: "Choose a clear photo of a single fruit for an AI-assisted reading and practical next steps.",
   intakeLabel: "01 · Intake",
   fileHint: "JPEG · PNG · 10 MB max",
   dropTitle: "Click to upload or drag and drop a mango leaf photo",
+  dropTitleFruit: "Click to upload or drag and drop a mango fruit photo",
   dropSub: "Choose an image from your device",
   replaceHint: "Click or drop another photo to replace",
   analyze: "Analyze Leaf",
+  analyzeFruit: "Analyze Fruit",
   analyzing: "Analyzing your leaf…",
+  analyzingFruit: "Analyzing your fruit…",
   readingFeatures: "Reading leaf features",
+  readingFeaturesFruit: "Reading fruit features",
   fileHintBottom: "JPEG or PNG · up to 10 MB",
   invalidType: "Choose a PNG, JPG, or JPEG image.",
   tooLarge: "This image is larger than 10 MB. Choose a smaller photo.",
@@ -49,27 +60,38 @@ const en = {
   consultExpert: "For severe or recurring infections, consult a local agricultural expert.",
   noOutline: "No area matching this label could be outlined.",
   footer: "Mango leaf field diagnostic · For agricultural guidance",
+  footerFruit: "Mango fruit field diagnostic · For agricultural guidance",
 };
 type Ui = typeof en;
 
 const hi: Ui = {
   language: "भाषा",
   appTitle: "आम पत्ती रोग पहचान",
+  appTitleFruit: "आम फल रोग पहचान",
   fieldDiagnostic: "खेत में जाँच",
+  modeLeaf: "पत्ती",
+  modeFruit: "फल",
   step1: "01 अपलोड",
   step2: "02 निदान",
   step3: "03 उपाय",
   leafIntakeStep: "पत्ती अपलोड · चरण 01",
-  heroTitle: "आम की पत्ती को खेत की डायरी की तरह पढ़ें।",
+  fruitIntakeStep: "फल अपलोड · चरण 01",
+  heroTitle: "एक नज़र में पत्ती का हाल जानें।",
+  heroTitleFruit: "एक नज़र में फल का हाल जानें।",
   heroSub: "एक पत्ती की साफ़ फ़ोटो चुनें और AI आधारित अनुमान तथा व्यावहारिक अगले कदम पाएँ।",
+  heroSubFruit: "एक फल की साफ़ फ़ोटो चुनें और AI आधारित अनुमान तथा व्यावहारिक अगले कदम पाएँ।",
   intakeLabel: "01 · अपलोड",
   fileHint: "JPEG · PNG · अधिकतम 10 MB",
   dropTitle: "आम की पत्ती की फ़ोटो अपलोड करने के लिए क्लिक करें या खींचकर छोड़ें",
+  dropTitleFruit: "आम के फल की फ़ोटो अपलोड करने के लिए क्लिक करें या खींचकर छोड़ें",
   dropSub: "अपने डिवाइस से फ़ोटो चुनें",
   replaceHint: "बदलने के लिए क्लिक करें या दूसरी फ़ोटो छोड़ें",
   analyze: "पत्ती की जाँच करें",
+  analyzeFruit: "फल की जाँच करें",
   analyzing: "पत्ती की जाँच हो रही है…",
+  analyzingFruit: "फल की जाँच हो रही है…",
   readingFeatures: "पत्ती की विशेषताएँ पढ़ी जा रही हैं",
+  readingFeaturesFruit: "फल की विशेषताएँ पढ़ी जा रही हैं",
   fileHintBottom: "JPEG या PNG · 10 MB तक",
   invalidType: "PNG, JPG या JPEG फ़ोटो चुनें।",
   tooLarge: "यह फ़ोटो 10 MB से बड़ी है। छोटी फ़ोटो चुनें।",
@@ -94,26 +116,37 @@ const hi: Ui = {
   consultExpert: "गंभीर या बार-बार होने वाले संक्रमण में स्थानीय कृषि विशेषज्ञ से सलाह लें।",
   noOutline: "इस लेबल से मेल खाता कोई क्षेत्र चिह्नित नहीं हो सका।",
   footer: "आम पत्ती जाँच · कृषि मार्गदर्शन हेतु",
+  footerFruit: "आम फल जाँच · कृषि मार्गदर्शन हेतु",
 };
 
 const mr: Ui = {
   language: "भाषा",
   appTitle: "आंबा पान रोग ओळख",
+  appTitleFruit: "आंबा  रोग ओळख",
   fieldDiagnostic: "शेतातील तपासणी",
+  modeLeaf: "पान",
+  modeFruit: "फळ",
   step1: "01 अपलोड",
   step2: "02 निदान",
   step3: "03 उपाय",
   leafIntakeStep: "पान अपलोड · पायरी 01",
-  heroTitle: "आंब्याचे पान शेतातील नोंदवहीसारखे वाचा.",
+  fruitIntakeStep: "फळ अपलोड · पायरी 01",
+ heroTitle: "एक नजर, आणि पानाची नेमकी स्थिती कळेल.",
+heroTitleFruit: "एक नजर, आणि फळाची नेमकी स्थिती कळेल.",
   heroSub: "एका पानाचा स्पष्ट फोटो निवडा आणि AI आधारित अंदाज व व्यावहारिक पुढील उपाय मिळवा.",
+  heroSubFruit: "एका फळाचा स्पष्ट फोटो निवडा आणि AI आधारित अंदाज व व्यावहारिक पुढील उपाय मिळवा.",
   intakeLabel: "01 · अपलोड",
   fileHint: "JPEG · PNG · कमाल 10 MB",
   dropTitle: "आंब्याच्या पानाचा फोटो अपलोड करण्यासाठी क्लिक करा किंवा ड्रॅग करून सोडा",
+  dropTitleFruit: "आंब्याच्या  फोटो अपलोड करण्यासाठी क्लिक करा किंवा ड्रॅग करून सोडा",
   dropSub: "तुमच्या डिव्हाइसमधून फोटो निवडा",
   replaceHint: "बदलण्यासाठी क्लिक करा किंवा दुसरा फोटो टाका",
   analyze: "पान तपासा",
+  analyzeFruit: "फळ तपासा",
   analyzing: "पानाची तपासणी सुरू आहे…",
+  analyzingFruit: "फळाची तपासणी सुरू आहे…",
   readingFeatures: "पानाची वैशिष्ट्ये वाचली जात आहेत",
+  readingFeaturesFruit: "फळाची वैशिष्ट्ये वाचली जात आहेत",
   fileHintBottom: "JPEG किंवा PNG · 10 MB पर्यंत",
   invalidType: "PNG, JPG किंवा JPEG फोटो निवडा.",
   tooLarge: "हा फोटो 10 MB पेक्षा मोठा आहे. लहान फोटो निवडा.",
@@ -138,11 +171,15 @@ const mr: Ui = {
   consultExpert: "गंभीर किंवा वारंवार होणाऱ्या प्रादुर्भावासाठी स्थानिक कृषी तज्ज्ञाचा सल्ला घ्या.",
   noOutline: "या लेबलशी जुळणारा भाग चिन्हांकित करता आला नाही.",
   footer: "आंबा पान तपासणी · कृषी मार्गदर्शनासाठी",
+  footerFruit: "आंबा  तपासणी · कृषी मार्गदर्शनासाठी",
 };
 
 export const ui: Record<Lang, Ui> = { en, hi, mr };
 
+// ---------------------------------------------------------------------------
+// LEAF (8 classes)
 // Keys match the normalized class names (lowercase, "die back").
+// ---------------------------------------------------------------------------
 export const diseaseNames: Record<Lang, Record<string, string>> = {
   en: {},
   hi: {
@@ -170,79 +207,79 @@ export const diseaseNames: Record<Lang, Record<string, string>> = {
 export const diseaseInfoByLang: Record<Lang, Record<string, DiseaseInfo>> = {
   en: {
     anthracnose: {
-    description:
-      "A fungal disease causing dark, sunken spots on leaves, flowers, and fruit, often spreading rapidly in humid conditions.",
-    remedies: [
-      "Prune and destroy infected leaves and twigs",
-      "Apply copper-based fungicide sprays every 10-14 days during humid seasons",
-      "Avoid overhead irrigation to reduce leaf wetness",
-      "Ensure proper spacing between trees for airflow",
-    ],
-  },
-  "bacterial canker": {
-    description:
-      "A bacterial infection causing water-soaked lesions and cankers on leaves and stems, which can girdle branches over time.",
-    remedies: [
-      "Remove and burn severely infected branches",
-      "Apply copper oxychloride spray during early stages",
-      "Disinfect pruning tools between cuts to avoid spreading bacteria",
-      "Avoid injuring the tree during high-humidity periods",
-    ],
-  },
-  "cutting weevil": {
-    description:
-      "A pest infestation where larvae bore into leaves and shoots, causing wilting and dieback of young growth.",
-    remedies: [
-      "Prune and destroy affected shoots promptly",
-      "Apply neem-based or recommended insecticidal sprays",
-      "Monitor new flushes regularly during peak breeding season",
-      "Maintain field hygiene by removing fallen infected material",
-    ],
-  },
-  "die back": {
-    description:
-      "A progressive drying and death of branches starting from the tips, often linked to fungal infection or stress.",
-    remedies: [
-      "Prune affected branches well below the visibly infected area",
-      "Apply a fungicidal paste to pruning wounds",
-      "Improve tree vigor with balanced fertilization",
-      "Avoid water stress during dry periods",
-    ],
-  },
-  "gall midge": {
-    description:
-      "Small insect larvae that cause abnormal swellings (galls) on leaves, disrupting normal growth and photosynthesis.",
-    remedies: [
-      "Remove and destroy galled leaves before larvae mature",
-      "Apply recommended systemic insecticide during flush stage",
-      "Encourage natural predators like parasitic wasps",
-      "Avoid excessive nitrogen fertilization, which promotes tender growth favored by midges",
-    ],
-  },
-  "powdery mildew": {
-    description:
-      "A fungal disease appearing as a white, powdery coating on leaf surfaces, which can reduce photosynthesis and stunt growth.",
-    remedies: [
-      "Apply sulfur-based or systemic fungicides at first sign of symptoms",
-      "Improve air circulation by pruning dense canopy areas",
-      "Avoid excess nitrogen fertilization",
-      "Remove and destroy heavily infected leaves",
-    ],
-  },
-  "sooty mould": {
-    description:
-      "A black fungal growth that develops on honeydew secreted by sap-sucking insects, coating leaves and reducing sunlight absorption.",
-    remedies: [
-      "Control the underlying insect infestation (aphids, scale, mealybugs) causing honeydew",
-      "Wash affected leaves with a mild soap-water solution to remove mould",
-      "Apply horticultural oil spray to manage pest populations",
-      "Prune overly dense growth to improve airflow and reduce humidity",
-    ],
-  },
-  healthy: {
-    description: "No signs of disease detected — this leaf appears to be in good condition.",
-    remedies: [],
-  },
+      description:
+        "A fungal disease causing dark, sunken spots on leaves, flowers, and fruit, often spreading rapidly in humid conditions.",
+      remedies: [
+        "Prune and destroy infected leaves and twigs",
+        "Apply copper-based fungicide sprays every 10-14 days during humid seasons",
+        "Avoid overhead irrigation to reduce leaf wetness",
+        "Ensure proper spacing between trees for airflow",
+      ],
+    },
+    "bacterial canker": {
+      description:
+        "A bacterial infection causing water-soaked lesions and cankers on leaves and stems, which can girdle branches over time.",
+      remedies: [
+        "Remove and burn severely infected branches",
+        "Apply copper oxychloride spray during early stages",
+        "Disinfect pruning tools between cuts to avoid spreading bacteria",
+        "Avoid injuring the tree during high-humidity periods",
+      ],
+    },
+    "cutting weevil": {
+      description:
+        "A pest infestation where larvae bore into leaves and shoots, causing wilting and dieback of young growth.",
+      remedies: [
+        "Prune and destroy affected shoots promptly",
+        "Apply neem-based or recommended insecticidal sprays",
+        "Monitor new flushes regularly during peak breeding season",
+        "Maintain field hygiene by removing fallen infected material",
+      ],
+    },
+    "die back": {
+      description:
+        "A progressive drying and death of branches starting from the tips, often linked to fungal infection or stress.",
+      remedies: [
+        "Prune affected branches well below the visibly infected area",
+        "Apply a fungicidal paste to pruning wounds",
+        "Improve tree vigor with balanced fertilization",
+        "Avoid water stress during dry periods",
+      ],
+    },
+    "gall midge": {
+      description:
+        "Small insect larvae that cause abnormal swellings (galls) on leaves, disrupting normal growth and photosynthesis.",
+      remedies: [
+        "Remove and destroy galled leaves before larvae mature",
+        "Apply recommended systemic insecticide during flush stage",
+        "Encourage natural predators like parasitic wasps",
+        "Avoid excessive nitrogen fertilization, which promotes tender growth favored by midges",
+      ],
+    },
+    "powdery mildew": {
+      description:
+        "A fungal disease appearing as a white, powdery coating on leaf surfaces, which can reduce photosynthesis and stunt growth.",
+      remedies: [
+        "Apply sulfur-based or systemic fungicides at first sign of symptoms",
+        "Improve air circulation by pruning dense canopy areas",
+        "Avoid excess nitrogen fertilization",
+        "Remove and destroy heavily infected leaves",
+      ],
+    },
+    "sooty mould": {
+      description:
+        "A black fungal growth that develops on honeydew secreted by sap-sucking insects, coating leaves and reducing sunlight absorption.",
+      remedies: [
+        "Control the underlying insect infestation (aphids, scale, mealybugs) causing honeydew",
+        "Wash affected leaves with a mild soap-water solution to remove mould",
+        "Apply horticultural oil spray to manage pest populations",
+        "Prune overly dense growth to improve airflow and reduce humidity",
+      ],
+    },
+    healthy: {
+      description: "No signs of disease detected — this leaf appears to be in good condition.",
+      remedies: [],
+    },
   },
   hi: {
     anthracnose: {
@@ -379,6 +416,170 @@ export const diseaseInfoByLang: Record<Lang, Record<string, DiseaseInfo>> = {
     },
     healthy: {
       description: "कोणताही रोग आढळला नाही — हे पान चांगल्या स्थितीत दिसते.",
+      remedies: [],
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// FRUIT (5 classes)
+// Keys match the normalized class names returned by the fruit YOLO model
+// (lowercase: anthracnose, bacterial canker, scab, stemendrot, healthy).
+// ---------------------------------------------------------------------------
+export const fruitDiseaseNames: Record<Lang, Record<string, string>> = {
+  en: {},
+  hi: {
+    anthracnose: "एन्थ्रेक्नोज",
+    "bacterial canker": "जीवाणु कैंकर",
+    scab: "स्कैब (पपड़ी रोग)",
+    stemendrot: "डंठल सड़न (स्टेम एंड रॉट)",
+    healthy: "स्वस्थ",
+  },
+  mr: {
+    anthracnose: "अँथ्रॅक्नोज (करपा)",
+    "bacterial canker": "जिवाणूजन्य कॅन्कर",
+    scab: "खपली रोग (स्कॅब)",
+    stemendrot: "देठ कुजणे (स्टेम एंड रॉट)",
+    healthy: "निरोगी",
+  },
+};
+
+export const fruitDiseaseInfoByLang: Record<Lang, Record<string, DiseaseInfo>> = {
+  en: {
+    anthracnose: {
+      description:
+        "A fungal disease causing dark, sunken spots on mango fruit skin, often spreading rapidly in humid, post-harvest storage conditions.",
+      remedies: [
+        "Discard or isolate affected fruit immediately",
+        "Apply copper-based fungicide sprays pre-harvest every 10-14 days",
+        "Use hot-water treatment (52°C for 5 min) on harvested fruit",
+        "Avoid bruising fruit during harvest and handling",
+      ],
+    },
+    "bacterial canker": {
+      description:
+        "A bacterial infection causing water-soaked lesions on fruit skin that can crack and ooze, reducing market quality.",
+      remedies: [
+        "Remove and destroy severely affected fruit",
+        "Apply copper oxychloride spray during early fruit development",
+        "Disinfect harvesting tools and crates between batches",
+        "Avoid harvesting during or right after rain",
+      ],
+    },
+    scab: {
+      description:
+        "A fungal disease causing rough, corky, star-shaped lesions on fruit skin, usually originating from infected leaves or twigs.",
+      remedies: [
+        "Apply fungicide sprays at fruit-set stage",
+        "Remove and destroy fallen infected leaves and fruit",
+        "Prune for better airflow through the canopy",
+        "Avoid overhead irrigation close to harvest",
+      ],
+    },
+    stemendrot: {
+      description:
+        "A fungal rot that develops at the stem attachment point after harvest, often invisible until storage, causing fruit to soften and decay.",
+      remedies: [
+        "Harvest with a short stem (1-2 cm) intact to reduce entry points",
+        "Apply post-harvest fungicide dip within hours of picking",
+        "Store fruit at recommended cool temperature and humidity",
+        "Avoid over-ripe or bruised fruit in storage batches",
+      ],
+    },
+    healthy: {
+      description: "No signs of disease detected — this fruit appears to be in good condition.",
+      remedies: [],
+    },
+  },
+  hi: {
+    anthracnose: {
+      description:
+        "एक फफूँद जनित रोग जिससे आम के फल की त्वचा पर गहरे, धँसे हुए धब्बे बनते हैं, जो नमी भरी भंडारण स्थितियों में तेज़ी से फैलता है।",
+      remedies: [
+        "प्रभावित फलों को तुरंत अलग कर नष्ट करें",
+        "कटाई से पहले हर 10-14 दिन पर कॉपर आधारित फफूँदनाशी का छिड़काव करें",
+        "कटाई के बाद फलों को गर्म पानी (52°C, 5 मिनट) से उपचारित करें",
+        "कटाई और संभालते समय फलों को चोट लगने से बचाएँ",
+      ],
+    },
+    "bacterial canker": {
+      description:
+        "एक जीवाणु संक्रमण जिससे फल की त्वचा पर पानी जैसे धब्बे बनते हैं, जो फट सकते हैं और रिसाव कर सकते हैं, जिससे बाज़ार गुणवत्ता घटती है।",
+      remedies: [
+        "गंभीर रूप से प्रभावित फलों को हटाकर नष्ट करें",
+        "फल विकास की शुरुआती अवस्था में कॉपर ऑक्सीक्लोराइड का छिड़काव करें",
+        "हर खेप के बाद कटाई के औज़ार और टोकरियाँ कीटाणुरहित करें",
+        "बारिश के दौरान या तुरंत बाद कटाई से बचें",
+      ],
+    },
+    scab: {
+      description:
+        "एक फफूँद रोग जिससे फल की त्वचा पर खुरदरे, कॉर्क जैसे, तारे के आकार के धब्बे बनते हैं, जो आमतौर पर संक्रमित पत्तियों या टहनियों से शुरू होते हैं।",
+      remedies: [
+        "फल बनने की अवस्था में फफूँदनाशी का छिड़काव करें",
+        "गिरी हुई संक्रमित पत्तियाँ और फल हटाकर नष्ट करें",
+        "बेहतर हवा संचार के लिए छँटाई करें",
+        "कटाई के नज़दीक ऊपर से सिंचाई से बचें",
+      ],
+    },
+    stemendrot: {
+      description:
+        "कटाई के बाद डंठल जुड़ने वाली जगह पर विकसित होने वाली फफूँद सड़न, जो अक्सर भंडारण तक दिखाई नहीं देती और फल को नरम व सड़ा देती है।",
+      remedies: [
+        "प्रवेश बिंदु कम करने के लिए छोटा डंठल (1-2 सेमी) साथ रखकर तोड़ें",
+        "तोड़ने के कुछ घंटों के भीतर फफूँदनाशी में डुबोएँ",
+        "फलों को अनुशंसित ठंडे तापमान और नमी पर भंडारित करें",
+        "भंडारण खेप में अधिक पके या चोटिल फल शामिल न करें",
+      ],
+    },
+    healthy: {
+      description: "कोई रोग नहीं मिला — यह फल अच्छी स्थिति में दिखता है।",
+      remedies: [],
+    },
+  },
+  mr: {
+    anthracnose: {
+      description:
+        "एक बुरशीजन्य रोग ज्यामुळे आंब्याच्या फळाच्या सालीवर गडद, खोलगट डाग पडतात, जो दमट साठवण परिस्थितीत वेगाने पसरतो.",
+      remedies: [
+        "बाधित फळे त्वरित वेगळी करून नष्ट करा",
+        "काढणीपूर्वी दर 10-14 दिवसांनी तांबेयुक्त बुरशीनाशकाची फवारणी करा",
+        "काढणीनंतर फळांवर गरम पाण्याची (52°C, 5 मिनिटे) प्रक्रिया करा",
+        "काढणी व हाताळणी दरम्यान फळांना इजा होऊ देऊ नका",
+      ],
+    },
+    "bacterial canker": {
+      description:
+        "जिवाणूजन्य संसर्ग ज्यामुळे फळाच्या सालीवर पाणथळ डाग तयार होतात, जे तडकून गळू शकतात, त्यामुळे बाजारातील गुणवत्ता घटते.",
+      remedies: [
+        "गंभीर बाधित फळे काढून नष्ट करा",
+        "फळ विकासाच्या सुरुवातीच्या टप्प्यात कॉपर ऑक्सिक्लोराईडची फवारणी करा",
+        "प्रत्येक खेपेनंतर काढणीची अवजारे व टोपल्या निर्जंतुक करा",
+        "पावसादरम्यान किंवा लगेच नंतर काढणी टाळा",
+      ],
+    },
+    scab: {
+      description:
+        "एक बुरशीजन्य रोग ज्यामुळे फळाच्या सालीवर खरबरीत, कॉर्कसारखे, ताऱ्याच्या आकाराचे डाग पडतात, जे सहसा संसर्गित पाने किंवा फांद्यांपासून सुरू होतात.",
+      remedies: [
+        "फळधारणेच्या टप्प्यात बुरशीनाशकाची फवारणी करा",
+        "गळून पडलेली संसर्गित पाने व फळे काढून नष्ट करा",
+        "चांगल्या हवा संचारासाठी छाटणी करा",
+        "काढणीच्या जवळ वरून सिंचन टाळा",
+      ],
+    },
+    stemendrot: {
+      description:
+        "काढणीनंतर देठ जोडलेल्या जागी विकसित होणारी बुरशीजन्य कुज, जी बऱ्याचदा साठवणीपर्यंत दिसत नाही आणि फळ मऊ होऊन कुजते.",
+      remedies: [
+        "प्रवेशाच्या जागा कमी करण्यासाठी लहान देठ (1-2 सेमी) ठेवून काढणी करा",
+        "काढणीनंतर काही तासांत बुरशीनाशकात बुडवा",
+        "फळे शिफारस केलेल्या थंड तापमान व आर्द्रतेत साठवा",
+        "साठवण खेपेत जास्त पिकलेली किंवा इजा झालेली फळे टाळा",
+      ],
+    },
+    healthy: {
+      description: "कोणताही रोग आढळला नाही — हे फळ चांगल्या स्थितीत दिसते.",
       remedies: [],
     },
   },
